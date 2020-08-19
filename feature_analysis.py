@@ -1,6 +1,8 @@
 import glob
 import os
+import numpy as np
 import pandas as pd
+import minepy as mp
 
 def dic_write(df, w, h):
 
@@ -91,10 +93,40 @@ def read_csv_data(read_path):
     
     return df, seq_name
 
+def cal_mic(x, y):
+
+    # calculate the maximal information coefficient 
+
+    x = np.array(x)
+    y = np.array(y)
+    mine = mp.MINE(alpha=0.6, c=15, est="mic_approx")
+    mine.compute_score(x, y)
+
+    return mine.mic()
+
+def balance_set(set1, set2):
+
+    # balance trainning data set 
+
+    if set1.shape[0] < set2.shape[0]:
+        set2 = set2.sample(n=int(len(set1)), replace=False, random_state=0, axis=0)
+    if set1.shape[0] > set2.shape[0]:
+        set1 = set1.sample(n=int(len(set2)), replace=False, random_state=0, axis=0)
+    df = pd.concat([set2, set1], axis=0)
+
+    return df
+
+
+
 
 if __name__ == "__main__":
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\ALL\\'      # the path of csv file
+    read_path = 'E:\\0-Research\\01-VVC\\result\\train\\'      # the path of csv file
 
     df, seq_name = read_csv_data(read_path)
-    write_split_result("split_result_all.csv", 'cu', df)
+
+    #write_split_result("split_result_all.csv", 'cu', df)
+
+    df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
+
+    print('var: ', cal_mic(df.loc[:, 'var'], df.loc[:, 'mode']))

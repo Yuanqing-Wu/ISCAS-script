@@ -22,14 +22,6 @@ for i, path in enumerate(read_csv):
     else:
         df = pd.concat([df, temp], ignore_index = True) 
 
-s_no = df[df['mode'] == 2000]  
-s_sp = df[df['mode'] != 2000]
-if s_no.shape[0] < s_sp.shape[0]:
-    s_sp = s_sp.sample(n=int(len(s_no)), replace=False, random_state=0, axis=0)
-if s_no.shape[0] > s_sp.shape[0]:
-    s_no = s_no.sample(n=int(len(s_sp)), replace=False, random_state=0, axis=0)
-df = pd.concat([s_sp, s_no], axis=0)
-
 X = df.loc[:, ['w', 'h', 'depth', 'qt_d', 'mt_d', 'qp', 'gradx', 'grady', 'var']]
 Y = df.loc[:, 'mode']
 Y[Y != 2000] = 1
