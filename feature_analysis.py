@@ -2,11 +2,10 @@ import glob
 import os
 import pandas as pd
 
-read_path = 'E:\\0-Research\\01-VVC\\result\\ALL\\'      # 要读取的文件夹的地址
-
-#fdata_analysis = open('fdata_analysis.csv', 'w')
-
 def dic_write(df, w, h):
+
+    # write split probility of everu cu size to dictionary
+
     df = df[df['w'] == w]
     df = df[df['h'] == h]
     num_split = df["mode"].value_counts(1) 
@@ -43,22 +42,10 @@ def dic_write(df, w, h):
     return [split_ratio_no, split_ratio_qt, split_ratio_bh, split_ratio_bv, split_ratio_th, split_ratio_tv]
 
 
-
-read_csv = glob.glob(os.path.join(read_path,'*.csv')) # 读取文件夹中所有后缀为xlsx的文件地址
-df = None
-for i, path in enumerate(read_csv):     # 循环读取所有后缀为xlsx的文件
-
-    #before, file_name = path.split(read_path)
-    #file_name, csv = file_name.split('.')
-    #df = pd.read_csv(path)
-    month = pd.read_csv(path)
-    if df is None:          # 第一次df为空，需要赋值为DataFrame
-        df = month
-    else:
-        df = pd.concat([df,month], ignore_index = True)  # 之后读取的每个文件都与前一个文件合并
-
-
 def write_split_result(file_name, seq_name, df):
+
+    # write split result to csv file
+
     data = {}
 
     data[seq_name + '_64x64'] = dic_write(df, 64, 64)
@@ -80,3 +67,34 @@ def write_split_result(file_name, seq_name, df):
 
     dd = pd.DataFrame(data)
     pd.DataFrame(dd.values.T, index=dd.columns, columns=dd.index).to_csv(file_name)
+
+
+
+def read_csv_data(read_path):
+
+    read_csv = glob.glob(os.path.join(read_path,'*.csv')) # read the address of every csv file
+
+    df = None
+    seq_name = []
+
+    for i, path in enumerate(read_csv):     #  Loop reading every csv file
+
+        before, file_name = path.split(read_path)
+        file_name, csv = file_name.split('.')
+        seq_name.append(file_name)
+
+        month = pd.read_csv(path)
+        if df is None:          # if df is empty
+            df = month
+        else:
+            df = pd.concat([df,month], ignore_index = True)  # emerge every csv data
+    
+    return df, seq_name
+
+
+if __name__ == "__main__":
+
+    read_path = 'E:\\0-Research\\01-VVC\\result\\ALL\\'      # the path of csv file
+
+    df, seq_name = read_csv_data(read_path)
+    write_split_result("split_result_all.csv", 'cu', df)
