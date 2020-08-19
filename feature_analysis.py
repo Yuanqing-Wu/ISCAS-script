@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import minepy as mp
+import matplotlib.pyplot as plt
 
 def dic_write(df, w, h):
 
@@ -116,7 +117,25 @@ def balance_set(set1, set2):
 
     return df
 
+def block_static(df, w, h, feature, label, xlim):
 
+    df = df[df['w'] == w]
+    df = df[df['h'] == h]
+
+    A1 = df[df['mode'] == label]
+    A2 = df[df['mode'] != label]
+
+    B1 = A1.loc[:, [feature]]
+    B2 = A2.loc[:, [feature]]
+
+    plt.figure(num=feature)
+    ax = B1.plot(kind='kde')
+    B2.plot(kind='kde', ax=ax, xlim=xlim)
+    plt.savefig(fname = feature + '.png')
+    
+
+
+# feature = ['w', 'h', 'depth', 'qt_d', 'mt_d','qp', 'gradx', 'grady', 'var', 'ngz', 'nmg', 'ubd', 'lrd']
 
 
 if __name__ == "__main__":
@@ -129,4 +148,7 @@ if __name__ == "__main__":
 
     df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
 
-    print('var: ', cal_mic(df.loc[:, 'var'], df.loc[:, 'mode']))
+    #print('var: ', cal_mic(df.loc[:, 'var'], df.loc[:, 'mode']))
+
+    block_static(df, 32, 32, 'var', 2000, [-100, 800])
+    #block_static(df, 32, 32, 'ngz', 2000, [-10, 200])
