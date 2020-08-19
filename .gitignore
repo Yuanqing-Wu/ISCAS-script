@@ -1,0 +1,6 @@
+*.vscode
+*.csv
+*.model
+__pycache__
+*.txt
+*.png
