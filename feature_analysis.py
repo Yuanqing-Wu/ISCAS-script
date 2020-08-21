@@ -117,10 +117,16 @@ def balance_set(set1, set2):
 
     return df
 
-def block_static(df, w, h, feature, label, xlim):
+def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
 
     df = df[df['w'] == w]
     df = df[df['h'] == h]
+    df = df[df['qp'] == qp]
+
+    df = balance_set(df[df['mode'] == label], df[df['mode'] != label])
+
+    if normalize == True:
+        df[feature] = np.divide(df[feature], w*h)
 
     A1 = df[df['mode'] == label]
     A2 = df[df['mode'] != label]
@@ -135,20 +141,24 @@ def block_static(df, w, h, feature, label, xlim):
     
 
 
-# feature = ['w', 'h', 'depth', 'qt_d', 'mt_d','qp', 'gradx', 'grady', 'var', 'ngz', 'nmg', 'ubd', 'lrd']
+# feature = ['w', 'h', 'mode', 'qp', 'qt_d', 'mt_d', 'var', 'H', 'gradx', 'grady', 'maxgrad', 'dvarh', 'dvarv', 'dHh', 'dHv', 'dgradxh', 'dgradxv', 'dgradyh', 'dgradyv']
 
 
 if __name__ == "__main__":
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\train\\'      # the path of csv file
+    read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
 
     df, seq_name = read_csv_data(read_path)
 
     #write_split_result("split_result_all.csv", 'cu', df)
 
-    df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
+    #df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
 
     #print('var: ', cal_mic(df.loc[:, 'var'], df.loc[:, 'mode']))
 
-    block_static(df, 32, 32, 'var', 2000, [-100, 800])
+    block_static(df, 32, 32, 27, 'var', 2000, [-400, 1000], True)
+    block_static(df, 32, 32, 27, 'H', 2000, [-4000, 10000])
+    block_static(df, 32, 32, 27, 'gradx', 2000, [-50, 100], True)
+    block_static(df, 32, 32, 27, 'grady', 2000, [-50, 100], True)
+    block_static(df, 32, 32, 27, 'maxgrad', 2000, [-100, 800])
     #block_static(df, 32, 32, 'ngz', 2000, [-10, 200])
