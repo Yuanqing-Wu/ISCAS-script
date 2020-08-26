@@ -105,14 +105,21 @@ def cal_mic(x, y):
 
     return mine.mic()
 
-def balance_set(set1, set2):
+def balance_set(set1, set2, size = 0):
 
     # balance trainning data set 
+    if size > set1.shape[0] or size > set2.shape[0]:
+        print("the size is too large")
+        return 
 
-    if set1.shape[0] < set2.shape[0]:
-        set2 = set2.sample(n=int(len(set1)), replace=False, random_state=0, axis=0)
-    if set1.shape[0] > set2.shape[0]:
-        set1 = set1.sample(n=int(len(set2)), replace=False, random_state=0, axis=0)
+    if size == 0:
+        if set1.shape[0] < set2.shape[0]:
+            set2 = set2.sample(n=int(len(set1)), replace=False, axis=0)
+        if set1.shape[0] > set2.shape[0]:
+            set1 = set1.sample(n=int(len(set2)), replace=False, axis=0)
+    else:
+        set1 = set1.sample(n=size, replace=False, axis=0)
+        set2 = set2.sample(n=size, replace=False, axis=0)
     df = pd.concat([set2, set1], axis=0)
 
     return df
@@ -156,9 +163,10 @@ if __name__ == "__main__":
 
     #print('var: ', cal_mic(df.loc[:, 'var'], df.loc[:, 'mode']))
 
-    block_static(df, 32, 32, 27, 'var', 2000, [-400, 1000], True)
-    block_static(df, 32, 32, 27, 'H', 2000, [-4000, 10000])
-    block_static(df, 32, 32, 27, 'gradx', 2000, [-50, 100], True)
-    block_static(df, 32, 32, 27, 'grady', 2000, [-50, 100], True)
-    block_static(df, 32, 32, 27, 'maxgrad', 2000, [-100, 800])
+    #block_static(df, 32, 32, 27, 'var', 2000, [-400, 1000], True)
+    #block_static(df, 32, 32, 27, 'H', 2000, [-4000, 10000])
+    #block_static(df, 32, 32, 27, 'gradx', 2000, [-50, 100], True)
+    #block_static(df, 32, 32, 27, 'grady', 2000, [-50, 100], True)
+    #block_static(df, 32, 32, 27, 'maxgrad', 2000, [-100, 800])
+    block_static(df, 32, 32, 27, 'nvar', 2000, [-1000, 2000])
     #block_static(df, 32, 32, 'ngz', 2000, [-10, 200])
