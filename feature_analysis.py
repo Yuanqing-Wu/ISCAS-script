@@ -124,6 +124,14 @@ def balance_set(set1, set2, size = 0):
 
     return df
 
+def save_block_set(df, w, h, data_size, file_name):
+    df = df[df['w'] == w]
+    df = df[df['h'] == h]
+    df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000], data_size)
+    file_name = file_name + '_' + str(w) + 'x' +str(h) + '_' +str(data_size) + '.csv'
+    df.to_csv(file_name)
+
+
 def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
 
     df = df[df['w'] == w]
@@ -145,7 +153,7 @@ def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
     ax = B1.plot(kind='kde')
     B2.plot(kind='kde', ax=ax, xlim=xlim)
     plt.savefig(fname = feature + '.png')
-    
+
 
 
 # feature = ['w', 'h', 'mode', 'qp', 'qt_d', 'mt_d', 'var', 'H', 'gradx', 'grady', 'maxgrad', 'dvarh', 'dvarv', 'dHh', 'dHv', 'dgradxh', 'dgradxv', 'dgradyh', 'dgradyv']
@@ -153,20 +161,11 @@ def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
 
 if __name__ == "__main__":
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
+    read_path = 'E:\\0-Research\\01-VVC\\result\\train\\'      # the path of csv file
 
     df, seq_name = read_csv_data(read_path)
 
-    #write_split_result("split_result_all.csv", 'cu', df)
-
-    #df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
-
-    #print('var: ', cal_mic(df.loc[:, 'var'], df.loc[:, 'mode']))
-
-    #block_static(df, 32, 32, 27, 'var', 2000, [-400, 1000], True)
-    #block_static(df, 32, 32, 27, 'H', 2000, [-4000, 10000])
-    #block_static(df, 32, 32, 27, 'gradx', 2000, [-50, 100], True)
-    #block_static(df, 32, 32, 27, 'grady', 2000, [-50, 100], True)
-    #block_static(df, 32, 32, 27, 'maxgrad', 2000, [-100, 800])
-    block_static(df, 32, 32, 27, 'nvar', 2000, [-1000, 2000])
-    #block_static(df, 32, 32, 'ngz', 2000, [-10, 200])
+    save_block_set(df, 64, 64, 1000, 's-ns_train')
+    save_block_set(df, 32, 32, 1000, 's-ns_train')
+    save_block_set(df, 16, 16, 1000, 's-ns_train')
+    
