@@ -124,10 +124,14 @@ def balance_set(set1, set2, size = 0):
 
     return df
 
-def save_block_set(df, w, h, data_size, file_name):
+def save_block_set(df, w, h, file_name, data_size = 0):
     df = df[df['w'] == w]
     df = df[df['h'] == h]
-    df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000], data_size)
+
+    if data_size == 0:
+        df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
+    else:
+        df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000], data_size)
     file_name = file_name + '_' + str(w) + 'x' +str(h) + '_' +str(data_size) + '.csv'
     df.to_csv(file_name)
 
@@ -161,11 +165,19 @@ def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
 
 if __name__ == "__main__":
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\train\\'      # the path of csv file
-
+    read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
+    #read_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\test\\'
     df, seq_name = read_csv_data(read_path)
+    #df = df.loc[:, ['mode', 'w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
 
-    save_block_set(df, 64, 64, 1000, 's-ns_train')
-    save_block_set(df, 32, 32, 1000, 's-ns_train')
-    save_block_set(df, 16, 16, 1000, 's-ns_train')
+    save_block_set(df, 32, 16,'s-ns_rectangle_test', 5000)
+    save_block_set(df, 32, 8,'s-ns_rectangle_test', 5000)
+    save_block_set(df, 32, 4,'s-ns_rectangle_test', 5000)
+
+    save_block_set(df, 16, 8,'s-ns_rectangle_test', 5000)
+    save_block_set(df, 16, 4,'s-ns_rectangle_test', 5000)
+
+    save_block_set(df, 8, 8,'s-ns_rectangle_test', 5000)
+    save_block_set(df, 8, 4,'s-ns_rectangle_test', 5000)
+    # write_split_result('10bit_all.csv', 'cu', df)
     

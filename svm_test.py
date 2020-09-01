@@ -6,46 +6,26 @@ import matplotlib.pyplot as plt
 from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
+import feature_analysis as fa
 
-#read data
-""" read_path = 'E:\\0-Research\\01-VVC\\result\\test'      
-read_csv = glob.glob(os.path.join(read_path,'*.csv')) 
-df = None
+test_set_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\modeltest\\' 
+df_test, seq_name= fa.read_csv_data(test_set_path)  
 
-for i, path in enumerate(read_csv):     
-    temp = pd.read_csv(path)
-    temp = temp[temp['h'] == 32]
-    temp = temp[temp['w'] == 32]
-    #temp = temp[temp['w'] == temp['h']] 
-    if df is None:          
-        df = temp
-    else:
-        df = pd.concat([df, temp], ignore_index = True) 
+#df_test = df_test[df_test['w'] == df_test['h']]
+#df_test = df_test[df_test['w'] != 8]
 
-X = df.loc[:, ['w', 'h', 'depth', 'qt_d', 'mt_d', 'qp', 'gradx', 'grady', 'var']]
-Y = df.loc[:, 'mode']
-Y[Y != 2000] = 1
-Y[Y == 2000] = 0 """
+X_test = df_test.loc[:, ['w', 'qp', 'H', 'nvar', 'ngradx', 'ngrady', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
+y_test = df_test.loc[:, 'mode']
+y_test[y_test != 2000] = 1
+y_test[y_test == 2000] = 0
 
-clf = joblib.load('all.model')
-print(clf.support_.shape)
-print(clf.support_vectors_.shape)
-print(clf.dual_coef_ .shape)
-print(clf.probA_.shape)
-print(clf.probB_.shape)
+clf = joblib.load('square_64_32_16.model')
+#print(clf.score(X_test, y_test))
+y_pre = clf.predict(X_test)
+y_pre_prob = clf.predict_proba(X_test)
 
-# print("测试集精度 %f" %clf.score(X, Y))   #测试集精度
-# y_pre=clf.predict_proba(X)
+prelog = open('pre.csv', 'w')
+for i in range(df_test.shape[0]):
+    prelog.write(str(df_test.loc[i, 'poc']) + ',' + str(df_test.loc[i, 'x']) + ',' + str(df_test.loc[i, 'y']) + ',' + str(df_test.loc[i, 'w']) + ',' + str(df_test.loc[i, 'h']) + ',' + str(y_test[i]) + ',' + str(y_pre[i]) + ',' + str(y_pre_prob[i][0]) + ',' + str(y_pre_prob[i][1]) + '\n')
 
-# prelog = open('pre.csv', 'w')
-# for i in range(Y.shape[0]):
-#     if y_pre[i][0] < 0.5 and Y[i] == 1:
-#         iscorrect = 1
-#     if y_pre[i][0] < 0.5 and Y[i] == 0:
-#         iscorrect = 0
-#     if y_pre[i][0] > 0.5 and Y[i] == 1:
-#         iscorrect = 0
-#     if y_pre[i][0] > 0.5 and Y[i] == 0:
-#         iscorrect = 1
-#     prelog.write(str(Y[i]) + ',' + str(y_pre[i][0]) + ',' + str(y_pre[i][1]) +  ',' + str(iscorrect) + '\n')
-# prelog.close()   
+prelog.close()
