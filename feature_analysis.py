@@ -165,19 +165,19 @@ def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
 
 if __name__ == "__main__":
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
-    #read_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\test\\'
+    read_path = 'E:\\0-Research\\01-VVC\\result\\train\\'      # the path of csv file
+    #read_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\train\\'
     df, seq_name = read_csv_data(read_path)
     #df = df.loc[:, ['mode', 'w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
 
-    save_block_set(df, 32, 16,'s-ns_rectangle_test', 5000)
-    save_block_set(df, 32, 8,'s-ns_rectangle_test', 5000)
-    save_block_set(df, 32, 4,'s-ns_rectangle_test', 5000)
+    save_block_set(df, 32, 16,'s-ns_rectangle_train', 2000)
+    # save_block_set(df, 32, 8,'s-ns_rectangle_train', 1000)
+    # save_block_set(df, 32, 4,'s-ns_rectangle_train', 1000)
 
-    save_block_set(df, 16, 8,'s-ns_rectangle_test', 5000)
-    save_block_set(df, 16, 4,'s-ns_rectangle_test', 5000)
+    # save_block_set(df, 16, 8,'s-ns_rectangle_train', 1000)
+    # save_block_set(df, 16, 4,'s-ns_rectangle_train', 1000)
 
-    save_block_set(df, 8, 8,'s-ns_rectangle_test', 5000)
-    save_block_set(df, 8, 4,'s-ns_rectangle_test', 5000)
+    # save_block_set(df, 8, 8,'s-ns_rectangle_train', 1000)
+    # save_block_set(df, 8, 4,'s-ns_rectangle_train', 1000)
     # write_split_result('10bit_all.csv', 'cu', df)
-    
+    #block_static(df, 32, 16, 27, 'nvar', 2000, [-5000, 50000])
