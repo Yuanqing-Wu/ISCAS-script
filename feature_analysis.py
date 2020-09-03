@@ -170,7 +170,7 @@ if __name__ == "__main__":
     df, seq_name = read_csv_data(read_path)
     #df = df.loc[:, ['mode', 'w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
 
-    save_block_set(df, 32, 16,'s-ns_rectangle_train', 2000)
+    save_block_set(df, 32, 16,'s-ns_train', 1000)
     # save_block_set(df, 32, 8,'s-ns_rectangle_train', 1000)
     # save_block_set(df, 32, 4,'s-ns_rectangle_train', 1000)
 

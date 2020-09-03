@@ -21,8 +21,7 @@ def rdo_th(clf, X_test, th):
                 num_error = num_error + 1
             num_pre = num_pre + 1
         accurency = 1 - num_error/y_pre.shape[0]
-    print(y_pre.shape[0], num_pre)
-    print(accurency)
+    print(y_pre.shape[0], num_pre, accurency)
 
 test_set_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\modeltest\\' 
 df_test, seq_name= fa.read_csv_data(test_set_path)  
