@@ -8,10 +8,8 @@ from sklearn.externals import joblib
 
 import feature_analysis as fa
 
-def feature_train(train, test, feature, train_size = 0, save_mode = None):
-
+def feature_train(train, test, feature, train_size = 0, save_mode = None, C = 100000, gamma = 0):
     
-
     X_train = train.loc[:, feature]
     X_test = test.loc[:, feature]
 
@@ -31,8 +29,12 @@ def feature_train(train, test, feature, train_size = 0, save_mode = None):
         X_train, _, y_train, _ = train_test_split(X_train, y_train, train_size = train_size, random_state = 1, stratify = y_train)
 
     start_time = time.time()
-    C = 100000
-    svc = svm.SVC(kernel='rbf', C = C, probability = True)
+
+    if gamma == 0:
+        svc = svm.SVC(kernel='rbf', C = C, probability = True)
+    else:
+        svc = svm.SVC(kernel='rbf', C = C, gamma = gamma, probability = True)
+
     svc.fit(X_train, y_train)
 
     end_time = time.time()
@@ -89,5 +91,5 @@ print("test set shape: ", df_test.shape[0])
 
 
 # feature_train(df_train, df_test, ['w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'])
-# feature_train(df_train, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'])
-paraments_search(df_train, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'], [1, 10], [0.00001, 0.000001])
+feature_train(df_train, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'], gamma = 2e-07, save_mode='s_ns_32x32')
+# paraments_search(df_train, df_test, ['qp', 'nvar', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'], [100000], [0.0000000005, 0.0000000001, 0.00000000005])
