@@ -20,7 +20,7 @@ def rdo_th(clf, X_test, y_test, th):
                 num_error = num_error + 1
             num_pre = num_pre + 1
         accurency = 1 - num_error/y_pre.shape[0]
-    print(y_pre.shape[0], num_pre, accurency)
+    print(th, y_pre.shape[0], num_pre, accurency)
     return accurency
 
 def plot_pre_accurency_with_th(model, df_test, feature):
@@ -38,14 +38,14 @@ def plot_pre_accurency_with_th(model, df_test, feature):
         accurency.append(rdo_th(clf, X_test, y_test, th))
     
     plt.figure(num='accurency')
-    plt.plot(np.linspace(0, 1, 11), accurency, 'o-')
+    plt.plot(np.linspace(0.5, 1, 11), accurency, 'o-')
     plt.savefig(fname = 'accurency.png')
         
 
 test_set_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\modeltest\\' 
 df_test, seq_name= fa.read_csv_data(test_set_path)  
 
-model = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\model\\s_ns_32x32.model'
+model = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\model\\s_ns_8x8.model'
 
-plot_pre_accurency_with_th(model, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'])
+plot_pre_accurency_with_th(model, df_test, ['qp', 'nvar', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'])
 

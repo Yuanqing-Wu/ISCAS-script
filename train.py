@@ -50,6 +50,7 @@ def feature_train(train, test, feature, train_size = 0, save_mode = None, C = 10
 
 
 def paraments_search(df_train, df_test, feature, C, gamma):
+  
 
     X_train = df_train.loc[:, feature]
     X_test = df_test.loc[:, feature]
@@ -66,6 +67,8 @@ def paraments_search(df_train, df_test, feature, C, gamma):
     y_test[y_test != 2000] = 1
     y_test[y_test == 2000] = 0
 
+    arr = []
+    i = 0
     for c in C:
         for g in gamma:
             svc = svm.SVC(kernel='rbf', C = c, gamma = g, probability = True)
@@ -76,6 +79,11 @@ def paraments_search(df_train, df_test, feature, C, gamma):
 
             score = svc.score(X_test, y_test)
             print(c, g, score, svc.support_.shape[0], end_time-start_time)
+
+            arr.append([c, g, score, svc.support_.shape[0]])
+    
+    return arr
+    
 
 #read data
 train_set_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\train\\'
@@ -91,5 +99,9 @@ print("test set shape: ", df_test.shape[0])
 
 
 # feature_train(df_train, df_test, ['w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'])
-feature_train(df_train, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'], gamma = 2e-07, save_mode='s_ns_32x32')
-# paraments_search(df_train, df_test, ['qp', 'nvar', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'], [100000], [0.0000000005, 0.0000000001, 0.00000000005])
+# feature_train(df_train, df_test, ['qp', 'nvar', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'])
+score = paraments_search(df_train, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxv', 'ndgradyv'], [100, 1000, 10000, 100000, 1000000, 10000000, 100000000], [0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001, 0.0000000001, 0.00000000001, 0.000000000001, 0.0000000000001, 0.00000000000001, 0.000000000000001])
+# score = paraments_search(df_train, df_test, ['qp', 'ngradx', 'ngrady', 'gmx', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv'], [10000000], [0.000000000001, 0.0000000000008, 0.0000000000006, 0.0000000000004, 0.0000000000002, 0.0000000000001, 0.00000000000008, 0.00000000000006, 0.00000000000004, 0.00000000000002])
+max_score_index = np.argmax(score, axis = 0)
+print()
+print(score[:][max_score_index[2]])

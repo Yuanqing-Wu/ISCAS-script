@@ -158,6 +158,32 @@ def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
     B2.plot(kind='kde', ax=ax, xlim=xlim)
     plt.savefig(fname = feature + '.png')
 
+def size_reuse_size(size, *args):
+    n = len(args)
+    strr = ''
+    for i in range(n):
+        if i != n-1:
+            strr= strr + args[i] + size 
+        else:
+            strr = strr + args[i]
+    print(strr)
+    return strr
+
+def size_reuse(*args):
+    strr = []
+    strr.append(size_reuse_size('64x64', *args))
+    strr.append(size_reuse_size('32x32', *args))
+    strr.append(size_reuse_size('16x16', *args))
+    strr.append(size_reuse_size('8x8', *args))
+    strr.append(size_reuse_size('32x16', *args))
+    strr.append(size_reuse_size('32x8', *args))
+    strr.append(size_reuse_size('32x4', *args))
+    strr.append(size_reuse_size('16x8', *args))
+    strr.append(size_reuse_size('16x4', *args))
+    strr.append(size_reuse_size('8x4', *args))
+    return strr
+    
+
 
 
 # feature = ['w', 'h', 'mode', 'qp', 'qt_d', 'mt_d', 'var', 'H', 'gradx', 'grady', 'maxgrad', 'dvarh', 'dvarv', 'dHh', 'dHv', 'dgradxh', 'dgradxv', 'dgradyh', 'dgradyv']
@@ -165,12 +191,16 @@ def block_static(df, w, h, qp, feature, label, xlim, normalize = False):
 
 if __name__ == "__main__":
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\train\\'      # the path of csv file
+    read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
     #read_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\train\\'
-    df, seq_name = read_csv_data(read_path)
+    #df, seq_name = read_csv_data(read_path)
     #df = df.loc[:, ['mode', 'w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
 
-    save_block_set(df, 8, 8,'s-ns_train', 500)
+    #size_reuse('test_path', ' = test_set_path + \'s-ns_test', '0.csv\'')
+    # size_reuse('write_data(data_', '_file, df_', ', [\'qp\', \'ngradx\', \'ngrady\', \'gmx\', \'ndgradxh\', \'ndgradyh\', \'ndgradxv\', \'ndgradyv\'])')
+    size_reuse('run_one(exe, \'', '\')')
+
+    #save_block_set(df, 32, 4,'s-ns_train', 40)
     # save_block_set(df, 32, 8,'s-ns_rectangle_train', 1000)
     # save_block_set(df, 32, 4,'s-ns_rectangle_train', 1000)
 
