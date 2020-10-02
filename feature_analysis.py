@@ -69,6 +69,8 @@ def write_split_result(file_name, seq_name, df):
     data[seq_name + '_4x8'  ] = dic_write(df,  4,  8)
 
     dd = pd.DataFrame(data)
+    # dd['avr'] = dd.mean(1)
+    # print(dd)
     pd.DataFrame(dd.values.T, index=dd.columns, columns=dd.index).to_csv(file_name)
 
 
@@ -124,7 +126,7 @@ def balance_set(set1, set2, size = 0):
 
     return df
 
-def save_block_set(df, w, h, file_name, data_size = 0):
+def save_block_set_sns(df, w, h, file_name, data_size = 0):
     df = df[df['w'] == w]
     df = df[df['h'] == h]
 
@@ -132,6 +134,24 @@ def save_block_set(df, w, h, file_name, data_size = 0):
         df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
     else:
         df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000], data_size)
+    file_name = file_name + '_' + str(w) + 'x' +str(h) + '_' +str(data_size) + '.csv'
+    df.to_csv(file_name)
+
+def save_block_set_hsvs(df, w, h, file_name, data_size = 0):
+    df = df[df['w'] == w]
+    df = df[df['h'] == h]
+    n = df.index
+
+    for i in df.index:
+        if df.loc[i, 'mode'] == 2 or df.loc[i, 'mode'] == 4:
+            df.loc[i, 'mode'] = 100  # HS
+        if df.loc[i, 'mode'] == 3 or df.loc[i, 'mode'] == 5:
+            df.loc[i, 'mode'] = 200  # VS
+
+    if data_size == 0:
+        df = balance_set(df[df['mode'] == 100], df[df['mode'] == 200])
+    else:
+        df = balance_set(df[df['mode'] == 100], df[df['mode'] == 200], data_size)
     file_name = file_name + '_' + str(w) + 'x' +str(h) + '_' +str(data_size) + '.csv'
     df.to_csv(file_name)
 
@@ -193,14 +213,15 @@ if __name__ == "__main__":
 
     read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
     #read_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\train\\'
-    #df, seq_name = read_csv_data(read_path)
+    df, seq_name = read_csv_data(read_path)
     #df = df.loc[:, ['mode', 'w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
 
     #size_reuse('test_path', ' = test_set_path + \'s-ns_test', '0.csv\'')
     # size_reuse('write_data(data_', '_file, df_', ', [\'qp\', \'ngradx\', \'ngrady\', \'gmx\', \'ndgradxh\', \'ndgradyh\', \'ndgradxv\', \'ndgradyv\'])')
-    size_reuse('run_one(exe, \'', '\')')
+    #size_reuse('run_one(exe, \'', '\')')
 
     #save_block_set(df, 32, 4,'s-ns_train', 40)
+    save_block_set_hsvs(df, 32, 32,'hs-vs_train')
     # save_block_set(df, 32, 8,'s-ns_rectangle_train', 1000)
     # save_block_set(df, 32, 4,'s-ns_rectangle_train', 1000)
 

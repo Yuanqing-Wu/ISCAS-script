@@ -1,9 +1,10 @@
 import os
 import subprocess
 
-train_exe = "libsvmexe\\train"
-predict_exe = "libsvmexe\\predict"
-my_exe = 'libsvmexe\\my'
+train = "libsvmexe\\train"
+predict = "libsvmexe\\predict"
+ParaSearch = 'libsvmexe\\ParaSearch'
+th = 'libsvmexe\\th'
 
 
 def run_one(exe, size):
@@ -13,8 +14,14 @@ def run_one(exe, size):
     model_file = 'libsvmmodel\\s_ns_' + size + '.model'
     predict_file = 'libsvmdata\\s_ns_' +  size + '_predict.data'
 
-    cmd = my_exe + ' -i ' + train_file + ' -e ' + test_file + ' -m ' + model_file + ' -p ' + predict_file + ' > libsvmmodel\\s_ns_train' + size + '.log'
-    proc = subprocess.Popen(cmd, shell=True)
+    before, exename = exe.split('\\')
+
+    cmd = ''
+    if exe == ParaSearch:
+        cmd = exe + ' -i ' + train_file + ' -e ' + test_file + ' -m ' + model_file + ' -p ' + predict_file + ' > libsvmmodel\\s_ns_train' + size + exename + '.log'
+    if exe == th:
+        cmd = exe + ' -e ' + test_file + ' -m ' + model_file + ' -p ' + predict_file + ' > libsvmmodel\\s_ns_train' + size + exename + '.log'
+    subprocess.Popen(cmd, shell=True)
 
 def run_all(exe):
 
@@ -29,7 +36,7 @@ def run_all(exe):
     run_one(exe, '16x4')
     run_one(exe, '8x4')
 
-run_all(my_exe)
+run_all(th)
 
 
 
