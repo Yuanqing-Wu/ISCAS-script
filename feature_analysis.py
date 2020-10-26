@@ -4,6 +4,10 @@ import numpy as np
 import pandas as pd
 import minepy as mp
 import matplotlib.pyplot as plt
+from sklearn.feature_selection import mutual_info_classif
+from sklearn import preprocessing
+from sklearn import svm
+from sklearn.model_selection import train_test_split
 
 def dic_write(df, w, h):
 
@@ -96,7 +100,7 @@ def read_csv_data(read_path):
     
     return df, seq_name
 
-def cal_mic(x, y):
+def mic(x, y):
 
     # calculate the maximal information coefficient 
 
@@ -106,6 +110,27 @@ def cal_mic(x, y):
     mine.compute_score(x, y)
 
     return mine.mic()
+
+def cal_mic(df, feature):
+
+    # calculate the maximal information coefficient 
+    pd_mic = pd.DataFrame(index=feature, columns=feature)
+    for f1 in feature:
+        for f2 in feature:
+            x = np.array(df.loc[:, f1])
+            y = np.array(df.loc[:, f2])
+            pd_mic.loc[f1, f2] = mic(x, y)
+    pd_mic['avr'] = pd_mic.mean(1)
+    #print(pd_mic)
+    pd_mic.to_csv('mic.csv')
+
+def cal_mi(df, feature):
+
+    X = df.loc[:, feature]
+    y = np.array(df.loc[:, 'mode'])
+    print(mutual_info_classif(X,y))
+
+
 
 def balance_set(set1, set2, size = 0):
 
@@ -126,32 +151,33 @@ def balance_set(set1, set2, size = 0):
 
     return df
 
-def save_block_set_sns(df, w, h, file_name, data_size = 0):
+def save_block_set_sns(df, w, h, file_name, data_size = 0, isbalance_set = True):
     df = df[df['w'] == w]
     df = df[df['h'] == h]
 
-    if data_size == 0:
-        df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
-    else:
-        df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000], data_size)
+    if isbalance_set:
+        if data_size == 0:
+            df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000])
+        else:
+            df = balance_set(df[df['mode'] == 2000], df[df['mode'] != 2000], data_size)
     file_name = file_name + '_' + str(w) + 'x' +str(h) + '_' +str(data_size) + '.csv'
-    df.to_csv(file_name)
+    df.to_csv('csv_data/' + file_name)
 
-def save_block_set_hsvs(df, w, h, file_name, data_size = 0):
+def save_block_set_hsvs(df, w, h, file_name, data_size = 0, balance_set = True):
     df = df[df['w'] == w]
     df = df[df['h'] == h]
-    n = df.index
 
     for i in df.index:
         if df.loc[i, 'mode'] == 2 or df.loc[i, 'mode'] == 4:
             df.loc[i, 'mode'] = 100  # HS
         if df.loc[i, 'mode'] == 3 or df.loc[i, 'mode'] == 5:
             df.loc[i, 'mode'] = 200  # VS
-
-    if data_size == 0:
-        df = balance_set(df[df['mode'] == 100], df[df['mode'] == 200])
-    else:
-        df = balance_set(df[df['mode'] == 100], df[df['mode'] == 200], data_size)
+    
+    if balance_set:
+        if data_size == 0:
+            df = balance_set(df[df['mode'] == 100], df[df['mode'] == 200])
+        else:
+            df = balance_set(df[df['mode'] == 100], df[df['mode'] == 200], data_size)
     file_name = file_name + '_' + str(w) + 'x' +str(h) + '_' +str(data_size) + '.csv'
     df.to_csv(file_name)
 
@@ -202,6 +228,15 @@ def size_reuse(*args):
     strr.append(size_reuse_size('16x4', *args))
     strr.append(size_reuse_size('8x4', *args))
     return strr
+
+def stand_sca(data):
+    """
+    标准差标准化
+    :param data:传入的数据
+    :return:标准化之后的数据
+    """
+    new_data=(data-data.mean())/data.std()
+    return new_data
     
 
 
@@ -210,25 +245,130 @@ def size_reuse(*args):
 
 
 if __name__ == "__main__":
+    # save_block_set_hsvs(df, 32, 32,'hs-vs', balance_set = False)
+    # save_block_set_hsvs(df, 16, 16,'hs-vs', balance_set = False)
+    # save_block_set_hsvs(df, 8, 8,'hs-vs', balance_set = False)
+    # save_block_set_hsvs(df, 32, 16,'hs-vs', balance_set = False)
+    # save_block_set_hsvs(df, 32, 8,'hs-vs', balance_set = False)
+    # save_block_set_hsvs(df, 16, 8,'hs-vs', balance_set = False)
 
-    read_path = 'E:\\0-Research\\01-VVC\\result\\test\\'      # the path of csv file
-    #read_path = 'E:\\0-Research\\01-VVC\\Scripts-for-VVC\\vvc9data\\train\\'
-    df, seq_name = read_csv_data(read_path)
-    #df = df.loc[:, ['mode', 'w', 'qp', 'nvar', 'H', 'ngradx', 'ngrady', 'gmx', 'ndvarh', 'ndvarv', 'ndgradxh', 'ndgradyh', 'ndgradxv', 'ndgradyv']]
 
-    #size_reuse('test_path', ' = test_set_path + \'s-ns_test', '0.csv\'')
-    # size_reuse('write_data(data_', '_file, df_', ', [\'qp\', \'ngradx\', \'ngrady\', \'gmx\', \'ndgradxh\', \'ndgradyh\', \'ndgradxv\', \'ndgradyv\'])')
-    #size_reuse('run_one(exe, \'', '\')')
+    
+    # 保存划分结果
+    if 0:
+        read_path = 'E:\\0-Research\\00-ISCAS\\DataSet\\Test\\'      # the path of csv file
+        df, seq_name = read_csv_data(read_path)  
+        df = df[df['chType'] == 0]
+        write_split_result('10bit_all.csv', 'cu', df)
 
-    #save_block_set(df, 32, 4,'s-ns_train', 40)
-    save_block_set_hsvs(df, 32, 32,'hs-vs_train')
-    # save_block_set(df, 32, 8,'s-ns_rectangle_train', 1000)
-    # save_block_set(df, 32, 4,'s-ns_rectangle_train', 1000)
+    # 保存块data
+    if 1:
+        read_path = 'train/'      # the path of csv file
+        df, seq_name = read_csv_data(read_path)
+    
+        df = df[df['chType'] == 0]
 
-    # save_block_set(df, 16, 8,'s-ns_rectangle_train', 1000)
-    # save_block_set(df, 16, 4,'s-ns_rectangle_train', 1000)
+        save_block_set_sns(df, 64, 64,'s-ns')
+        save_block_set_sns(df, 32, 32,'s-ns')
+        save_block_set_sns(df, 16, 16,'s-ns')
+        save_block_set_sns(df, 8, 8,'s-ns')
+        save_block_set_sns(df, 32, 16,'s-ns')
+        save_block_set_sns(df, 32, 8,'s-ns')
+        save_block_set_sns(df, 32, 4,'s-ns')
+        save_block_set_sns(df, 16, 8,'s-ns')
+        save_block_set_sns(df, 16, 4,'s-ns')
+        save_block_set_sns(df, 8, 4,'s-ns')
+    
+    # 保存块data (1帧)
+    if 0:
+        read_path = 'E:\\0-Research\\00-ISCAS\\DataSet\\SingleFrame\\'      # the path of csv file
+        df, seq_name = read_csv_data(read_path)
+    
+        df = df[df['chType'] == 0]
+        save_block_set_sns(df, 64, 64,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 32, 32,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 16, 16,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 8, 8,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 32, 16,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 32, 8,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 32, 4,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 16, 8,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 16, 4,'test-s-ns', isbalance_set = False)
+        save_block_set_sns(df, 8, 4,'test-s-ns', isbalance_set = False)
 
-    # save_block_set(df, 8, 8,'s-ns_rectangle_train', 1000)
-    # save_block_set(df, 8, 4,'s-ns_rectangle_train', 1000)
-    # write_split_result('10bit_all.csv', 'cu', df)
-    #block_static(df, 32, 16, 27, 'nvar', 2000, [-5000, 50000])
+    # 计算mic
+    if 0:
+        train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_32x32_0.csv'    
+        df = pd.read_csv(train_set_path)
+
+        y = df.loc[:, 'mode']
+        y[y != 2000] = 1
+        y[y == 2000] = 0
+        
+        feature = ['qp', 'var', 'ndvarh','ndvarv','ndva','MaxDiffVar','InconsVarH','InconsVarV','ngradx','ngrady','ndgradxh','ndgradxv','ndgradyh','ndgradyv','ndgradx','ndgrady','gmx']
+        for f in feature:
+            print(f + ": ", mic(y, df.loc[:, f]))            
+    
+    # 数据预处理：标准化
+    if 0:
+        train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_64x64_0.csv'    
+        df = pd.read_csv(train_set_path)
+        X = df.loc[:, ['qp', 'var', 'ngradx', 'ngrady', 'MaxDiffVar', 'InconsVarH', 'InconsVarV', 'gmx']]
+        print(X)
+        X = stand_sca(X)
+        print(X)
+    
+    # 标准化训练
+    if 0:
+        train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_32x32_0.csv'    
+        df = pd.read_csv(train_set_path)
+        X = df.loc[:, ['qp', 'var', 'ngradx', 'ngrady', 'MaxDiffVar', 'InconsVarH', 'InconsVarV', 'gmx']]
+        X2 = stand_sca(X)
+
+        y = df.loc[:, 'mode']
+        y[y != 2000] = 1
+        y[y == 2000] = 0
+
+        X_train, _, y_train, _ = train_test_split(X, y, train_size = 500, random_state = 1, stratify = y)
+
+        svc = svm.SVC(kernel='rbf', C = 100, probability = True)
+        svc.fit(X_train, y_train)
+        print('no: ', svc.score(X, y))
+    
+    # Parament Search
+    if 0:
+        train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_32x32_0.csv'    
+        df = pd.read_csv(train_set_path)
+        X = df.loc[:, ['qp', 'var', 'ngradx', 'ngrady', 'MaxDiffVar', 'InconsVarH', 'InconsVarV', 'gmx']]
+        X2 = stand_sca(X)
+
+        y = df.loc[:, 'mode']
+        y[y != 2000] = 1
+        y[y == 2000] = 0
+
+        X_train, _, y_train, _ = train_test_split(X, y, train_size = 500, random_state = 1, stratify = y)
+
+        C = [10, 100, 1000, 10000, 100000]
+        gamma = [0.0000001, 0.00000001, 0.000000001, 0.0000000001, 0.00000000001, 0.000000000001]
+        for c in C:
+            for g in gamma:
+                svc = svm.SVC(kernel='rbf', C = c, gamma = g, probability = True)
+                svc.fit(X_train, y_train)
+                print(c, g, svc.score(X, y))
+
+    # 非标准化训练
+    if 0:
+        train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_64x64_0.csv' 
+        df = pd.read_csv(train_set_path)
+        X = df.loc[:, ['qp', 'var', 'ngradx', 'ngrady', 'MaxDiffVar', 'InconsVarH', 'InconsVarV', 'gmx']]
+        y = df.loc[:, 'mode']
+        y[y != 2000] = 1
+        y[y == 2000] = 0
+
+        X_train, _, y_train, _ = train_test_split(X, y, train_size = 500, random_state = 1, stratify = y)
+
+        svc = svm.SVC(kernel='rbf', C = 100000, probability = True)
+        svc.fit(X_train, y_train)
+        print('no: ', svc.score(X, y))
+        #print(y_pre)
+
