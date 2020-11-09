@@ -296,7 +296,7 @@ if __name__ == "__main__":
         save_block_set_sns(df, 16, 4,'test-s-ns', isbalance_set = False)
         save_block_set_sns(df, 8, 4,'test-s-ns', isbalance_set = False)
 
-    # 计算mic
+    # 计算sns mic
     if 0:
         train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_32x32_0.csv'    
         df = pd.read_csv(train_set_path)
@@ -307,7 +307,20 @@ if __name__ == "__main__":
         
         feature = ['qp', 'var', 'ndvarh','ndvarv','ndva','MaxDiffVar','InconsVarH','InconsVarV','ngradx','ngrady','ndgradxh','ndgradxv','ndgradyh','ndgradyv','ndgradx','ndgrady','gmx']
         for f in feature:
-            print(f + ": ", mic(y, df.loc[:, f]))            
+            print(f + ": ", mic(y, df.loc[:, f]))    
+
+    # 计算hsvs mic
+    if 0:
+        train_set_path = 'E:\\0-Research\\00-ISCAS\\PyScript\\csv_data\\s-ns_32x32_0.csv'    
+        df = pd.read_csv(train_set_path)
+
+        y = df.loc[:, 'mode']
+        y[y != 2000] = 1
+        y[y == 2000] = 0
+        
+        feature = ['qp', 'var', 'ndvarh','ndvarv','ndva','MaxDiffVar','InconsVarH','InconsVarV','ngradx','ngrady','ndgradxh','ndgradxv','ndgradyh','ndgradyv','ndgradx','ndgrady','gmx']
+        for f in feature:
+            print(f + ": ", mic(y, df.loc[:, f]))        
     
     # 数据预处理：标准化
     if 0:
