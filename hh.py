@@ -421,6 +421,7 @@ def feature_train(classifier, feature):
             break
         time.sleep(1)
     #read_log('libsvmdata/') 
+
 ###################################################################################################################################
 
 # 保存块data sns
@@ -588,7 +589,7 @@ if 0:
     #select_th(th, 'hs-vs_16x8')
 
 # Run th log
-if 1:
+if 0:
     readth_log('libsvmdata/')
 
 # Run predict
@@ -622,3 +623,29 @@ if 0:
     # feature_train('hs-vs_16x16', ['qp', 'ngradx', 'ngrady', 'ndva', 'ndgradx2', 'ndgrady2'])
     # feature_train('hs-vs_16x8', ['qp', 'ngradx', 'ngrady', 'ndva', 'ndgradx2', 'ndgrady2'])
     feature_train('hs-vs_8x8', ['qp', 'ngradx', 'ngrady', 'ndva', 'ndgradx2', 'ndgrady2'])
+
+if 1:
+
+    fig = plt.figure()
+    # sns - 0.02, 0.41, 0.40, 0.44, 0.53, 0.36, 0.31, 0.33, 0.45, 0.41, 0.45
+    # hsvs 0.002, 0.05, 0.11, 0.12, 0.03, 0.12, 0.11, 0.12, 0.05, 0.11, 0.07
+    b1 = plt.bar([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [0.02, 0.41, 0.40, 0.44, 0.53, 0.36, 0.31, 0.33, 0.45, 0.41, 0.45], width=0.3)
+    b2 = plt.bar([1+0.3, 2+0.3, 3+0.3, 4+0.3, 5+0.3, 6+0.3, 7+0.3, 8+0.3, 9+0.3, 10+0.3, 11+0.3], [0.002, 0.05, 0.11, 0.12, 0.03, 0.12, 0.11, 0.12, 0.05, 0.11, 0.07], width=0.3)
+    # plt.bar([1, 2, 3, 4], [4, 5, 6, 7], bottom=[4, 5, 6, 7], width=0.3)
+    
+    plt.xlim(0, 12)
+    plt.xticks([1.15, 2.15, 3.15, 4.15, 5.15, 6.15, 7.15, 8.15, 9.15, 10.15, 11.15], ['QP', 'Var', '$\mathregular{Grad_x}$', '$\mathregular{Grad_y}$', '$\mathregular{Grad_m}$', '$\mathregular{F_b}$(Var)', '$\mathregular{F_b}$$\mathregular{Grad_x}$', '$\mathregular{F_b}$$\mathregular{Grad_y}$', '$\mathregular{F_q}$(Var)', '$\mathregular{F_q}$$\mathregular{Grad_x}$', '$\mathregular{F_q}$$\mathregular{Grad_y}$'])
+    plt.grid(True)
+
+    plt.legend(fontsize=12)
+
+    #设置坐标轴名称
+    plt.ylabel('MIC',fontsize=12)
+
+    fig.autofmt_xdate(rotation=35)
+    
+    print(type(b1))
+    
+    plt.legend((b1, b2), ('S-NS', 'HS-VS'))
+    
+    plt.show()
